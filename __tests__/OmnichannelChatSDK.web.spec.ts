@@ -152,7 +152,10 @@ describe('Omnichannel Chat SDK (Web)', () => {
         }
     });
 
-    it('ChatSDK.getVoiceVideoCalling() should not work if callingOption is set to \'NoCalling\'', async () => {
+    it('1234', async () => {
+        
+        console.log(omnichannelConfig)
+
         const chatSDK = new OmnichannelChatSDK(omnichannelConfig);
         chatSDK.getChatConfig = jest.fn();
         chatSDK.getChatToken = jest.fn();
