@@ -14,7 +14,7 @@ describe('Libraries', () => {
     });
 
     it('WebChatACSAdapter should come from a production URL', () => {
-        const productionUrl = "https://unpkg.com/acs_webchat-chat-adapter";
+        const productionUrl = "../../lib/chat-adapter.js";
         const acsAdapterCDNUrl = getACSAdapterCDNUrl();
         expect(acsAdapterCDNUrl.includes(productionUrl)).toBe(true);
     });

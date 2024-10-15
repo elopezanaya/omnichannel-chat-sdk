@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @jest-environment jsdom
  */
 
+import { createACSAdapter, createDirectLine, createIC3Adapter } from "../../src/utils/chatAdapterCreators";
+
 import LiveChatVersion from "../../src/core/LiveChatVersion";
-import {createDirectLine, createACSAdapter, createIC3Adapter} from "../../src/utils/chatAdapterCreators";
 import WebUtils from "../../src/utils/WebUtils";
 
 describe("Chat Adapter Creators", () => {
-    it ("createDirectLine() should throw an exception if script load fails", async () => {
+    it("createDirectLine() should throw an exception if script load fails", async () => {
         const optionalParams = {
             DirectLine: {
                 options: {}
@@ -24,16 +26,16 @@ describe("Chat Adapter Creators", () => {
             failScenario: jest.fn()
         };
 
-        WebUtils.loadScript = () => {throw Error()}
+        WebUtils.loadScript = () => { throw Error() }
 
         try {
             await createDirectLine(optionalParams, chatSDKConfig, LiveChatVersion.V2, "DirectLine", telemetry, scenarioMarker);
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe('ScriptLoadFailure');
         }
     });
 
-    it ("createDirectLine() should throw an exception if object failed to be created", async () => {
+    it("createDirectLine() should throw an exception if object failed to be created", async () => {
         const optionalParams = {
             DirectLine: {
                 options: {}
@@ -41,25 +43,28 @@ describe("Chat Adapter Creators", () => {
         };
 
         const chatSDKConfig = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const telemetry: any = {
             setCDNPackages: jest.fn()
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const scenarioMarker: any = {
             startScenario: jest.fn(),
             failScenario: jest.fn()
         };
 
-        (WebUtils as any).loadScript = () => {Promise.resolve()};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (WebUtils as any).loadScript = () => { Promise.resolve() };
 
         try {
             await createDirectLine(optionalParams, chatSDKConfig, LiveChatVersion.V2, "DirectLine", telemetry, scenarioMarker);
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe('ChatAdapterInitializationFailure');
         }
     });
 
-    it ("createACSAdapter() should throw an exception if script load fails", async () => {
+    it("createACSAdapter() should throw an exception if script load fails", async () => {
         const optionalParams = {
             ACSAdapter: {
                 options: {}
@@ -87,16 +92,16 @@ describe("Chat Adapter Creators", () => {
         const chatClient: any = jest.fn();
         const logger: any = jest.fn();
 
-        WebUtils.loadScript = () => {throw Error()}
+        WebUtils.loadScript = () => { throw Error() }
 
         try {
             await createACSAdapter(optionalParams, chatSDKConfig, LiveChatVersion.V2, "ACS", telemetry, scenarioMarker, omnichannelConfig, chatToken, fileManager, chatClient, logger);
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe('ScriptLoadFailure');
         }
     });
 
-    it ("createACSAdapter() should throw an exception if object failed to be created", async () => {
+    it("createACSAdapter() should throw an exception if object failed to be created", async () => {
         const optionalParams = {
             ACSAdapter: {
                 options: {}
@@ -124,16 +129,16 @@ describe("Chat Adapter Creators", () => {
         const chatClient: any = jest.fn();
         const logger: any = jest.fn();
 
-        (WebUtils as any).loadScript = () => {Promise.resolve()};
+        (WebUtils as any).loadScript = () => { Promise.resolve() };
 
         try {
             await createACSAdapter(optionalParams, chatSDKConfig, LiveChatVersion.V2, "ACS", telemetry, scenarioMarker, omnichannelConfig, chatToken, fileManager, chatClient, logger);
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe('ChatAdapterInitializationFailure');
         }
     });
 
-    it ("createIC3Adapter() should throw an exception if script load fails", async () => {
+    it("createIC3Adapter() should throw an exception if script load fails", async () => {
         const optionalParams = {
             IC3Adapter: {
                 options: {}
@@ -154,16 +159,16 @@ describe("Chat Adapter Creators", () => {
         const ic3Client: any = jest.fn();
         const logger: any = jest.fn();
 
-        WebUtils.loadScript = () => {throw Error()}
+        WebUtils.loadScript = () => { throw Error() }
 
         try {
             await createIC3Adapter(optionalParams, chatSDKConfig, LiveChatVersion.V2, "ACS", telemetry, scenarioMarker, chatToken, ic3Client, logger);
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe('ScriptLoadFailure');
         }
     });
 
-    it ("createIC3Adapter() should throw an exception if object failed to be created", async () => {
+    it("createIC3Adapter() should throw an exception if object failed to be created", async () => {
         const optionalParams = {
             IC3Adapter: {
                 options: {}
@@ -184,11 +189,11 @@ describe("Chat Adapter Creators", () => {
         const ic3Client: any = jest.fn();
         const logger: any = jest.fn();
 
-        (WebUtils as any).loadScript = () => {Promise.resolve()};
+        (WebUtils as any).loadScript = () => { Promise.resolve() };
 
         try {
             await createIC3Adapter(optionalParams, chatSDKConfig, LiveChatVersion.V2, "ACS", telemetry, scenarioMarker, chatToken, ic3Client, logger);
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe('ChatAdapterInitializationFailure');
         }
     });

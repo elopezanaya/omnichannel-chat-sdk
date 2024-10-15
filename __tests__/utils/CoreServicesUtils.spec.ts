@@ -1,5 +1,4 @@
-
-import { CoreServicesGeoNamesMapping, coreServicesOrgUrlPrefix, createCoreServicesOrgUrl, getCoreServicesGeoName, isCoreServicesOrgUrl, nonProductionDynamicsLocationCode, unqOrgUrlPattern } from "../../src/utils/CoreServicesUtils";
+import { CoreServicesGeoNamesMapping, createCoreServicesOrgUrl, getCoreServicesGeoName, isCoreServicesOrgUrl, unqOrgUrlPattern } from "../../src/utils/CoreServicesUtils";
 
 describe("CoreServicesUtils", () => {
     it("unqOrgUrlPattern should be able to retrieve the location code from the an UNQ OrgUrl", () => {

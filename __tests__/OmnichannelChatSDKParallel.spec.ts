@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const OmnichannelChatSDK = require('../src/OmnichannelChatSDK').default;
 
 import { SDKProvider, uuidv4 } from "@microsoft/ocsdk";
@@ -10,7 +11,6 @@ import ConversationMode from '../src/core/ConversationMode';
 import OmnichannelErrorCodes from "../src/core/OmnichannelErrorCodes";
 import { defaultChatSDKConfig } from "../src/validators/SDKConfigValidators";
 import libraries from "../src/utils/libraries";
-import sleep from "../src/utils/sleep";
 
 describe('Omnichannel Chat SDK, Parallel initialization', () => {
 
@@ -30,7 +30,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
         it('ChatSDK should require omnichannelConfig as parameter', () => {
             try {
                 new OmnichannelChatSDK();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error).toBeInstanceOf(Error);
             }
         });
@@ -44,7 +44,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 new OmnichannelChatSDK(omnichannelConfig);
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error).toBeInstanceOf(Error);
             }
         });
@@ -59,7 +59,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 new OmnichannelChatSDK(omnichannelConfig);
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error).toBeInstanceOf(Error);
                 expect(error.message).toBe("Empty 'widgetId' in OmnichannelConfiguration");
             }
@@ -75,7 +75,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 new OmnichannelChatSDK(omnichannelConfig);
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error).toBeInstanceOf(Error);
                 expect(error.message).toBe("Empty 'widgetId' in OmnichannelConfiguration");
             }
@@ -90,7 +90,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 new OmnichannelChatSDK(omnichannelConfig);
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error).toBeInstanceOf(Error);
                 expect(error.message).toBe("Empty 'widgetId' in OmnichannelConfiguration");
             }
@@ -116,7 +116,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 new OmnichannelChatSDK(omnichannelConfig);
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error).toBeInstanceOf(Error);
             }
         });
@@ -168,7 +168,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             const chatSDK = new OmnichannelChatSDK(omnichannelConfigGlobal, chatSDKConfig);
             const url = chatSDK.resolveChatAdapterUrl(ChatAdapterProtocols.ACS);
 
-            expect(url).toBe(libraries.getACSAdapterCDNUrl(chatSDKConfig.chatAdapterConfig.webChatACSAdapterVersion));
+            expect(url).toBe(libraries.getACSAdapterCDNUrl());
         });
 
         it('ChatSDK should be able to pick custom webChatACSAdapterCDNUrl if set', async () => {
@@ -238,7 +238,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 chatSDK.resolveChatAdapterUrl(protocol);
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error.toString()).toContain(`ChatAdapter for protocol ${protocol} currently not supported`);
             }
         });
@@ -411,7 +411,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
 
             try {
                 await chatSDK.initialize({ useParallelLoad: true });
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe("UnsupportedLiveChatVersion");
             }
         });
@@ -448,8 +448,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
 
             try {
                 await chatSDK.initialize({ useParallelLoad: true }); fail();
-            } catch (e) {
-                console.error(e)
+            } catch (e  : any) {
                 expect(e.message).toBe("OmnichannelClientInitializationFailure");
                 expect(chatSDK.OCClient).not.toBeDefined();
                 expect(chatSDK.getChatConfig).toHaveBeenCalledTimes(0);
@@ -464,7 +463,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
 
             try {
                 await chatSDK.initialize({ useParallelLoad: true }); fail();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe("ChatConfigRetrievalFailure");
                 expect(chatSDK.getChatConfig).toHaveBeenCalledTimes(1);
             }
@@ -558,7 +557,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.getChatConfig();
                 fail();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe(mockedErrorMessage);
             }
         });
@@ -711,7 +710,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
 
             try {
                 await chatSDK.startChat();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe(expectedResponse);
             }
 
@@ -739,7 +738,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat();
                 fail();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe(expectedResponse);
             }
 
@@ -769,7 +768,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat();
                 fail();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe(expectedResponse);
             }
 
@@ -865,7 +864,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat(optionalParams);
                 fail();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe('AuthenticatedChatConversationRetrievalFailure');
                 expect(chatSDK.OCClient.validateAuthChatRecord).toHaveBeenCalledTimes(1);
             }
@@ -943,7 +942,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat();
                 fail();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe('UninitializedChatSDK');
             }
         });
@@ -1014,7 +1013,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
 
                 await chatSDK.startChat();
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error.message).toBe("ConversationInitializationFailure");
             }
 
@@ -1033,7 +1032,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat();
                 fail();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe("ChatTokenRetrievalFailure");
             }
 
@@ -1076,7 +1075,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat();
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error).toBeDefined();
                 expect(error.message).toBe(OmnichannelErrorCodes[OmnichannelErrorCodes.WidgetUseOutsideOperatingHour].toString());
             }
@@ -1111,7 +1110,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat();
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error.message).toBe("MessagingClientInitializationFailure");
             }
 
@@ -1147,7 +1146,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
 
             try {
                 await chatSDK.startChat();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error.message).toBe("MessagingClientInitializationFailure");
             }
 
@@ -1184,7 +1183,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
 
             try {
                 await chatSDK.startChat();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error.message).toBe("MessagingClientConversationJoinFailure");
             }
 
@@ -1278,7 +1277,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat(optionalParams);
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error.message).toEqual('InvalidConversation');
             }
         });
@@ -1323,7 +1322,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat(optionalParams);
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error.message).toEqual('ClosedConversation');
             }
         });
@@ -1418,7 +1417,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.startChat(optionalParams);
                 fail();
-            } catch (e) {
+            } catch (e  : any) {
                 expect(e.message).toBe("ConversationInitializationFailure");
             }
         });
@@ -1506,7 +1505,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             let conversationDetails;
             try {
                 conversationDetails = await chatSDK.getConversationDetails();
-            } catch (error) {
+            } catch (error : any) {
                 errorThrown = true;
             }
 
@@ -2390,7 +2389,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.endChat();
                 fail();
-            } catch (error) {
+            } catch (error : any) {
                 expect(error.message).toBe('ConversationClosureFailure');
             }
 
@@ -3294,7 +3293,7 @@ describe('Omnichannel Chat SDK, Parallel initialization', () => {
             try {
                 await chatSDK.getAgentAvailability();
                 throw ("Should throw error.");
-            } catch (ex) {
+            } catch (ex:any) {
                 expect(ex?.message).toEqual("GetAgentAvailability can only be called before a chat has started.")
             }
         });

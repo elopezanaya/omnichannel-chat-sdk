@@ -1,6 +1,6 @@
+import ChatAdapterProtocols from "../core/messaging/ChatAdapterProtocols";
 import ChatSDKConfig from "../core/ChatSDKConfig";
 import LiveChatVersion from "../core/LiveChatVersion";
-import ChatAdapterProtocols from "../core/messaging/ChatAdapterProtocols";
 import libraries from "./libraries";
 
 const resolveIC3ClientUrl = (chatSDKConfig: ChatSDKConfig): string => {
@@ -33,7 +33,7 @@ const resolveACSAdapterCDNUrl = (chatSDKConfig: ChatSDKConfig) => {
     }
 
     if (chatSDKConfig.chatAdapterConfig && 'webChatACSAdapterVersion' in chatSDKConfig.chatAdapterConfig) {
-        return libraries.getACSAdapterCDNUrl(chatSDKConfig.chatAdapterConfig.webChatACSAdapterVersion);
+        return libraries.getACSAdapterCDNUrl();
     }
 
     return libraries.getACSAdapterCDNUrl();

@@ -1,4 +1,4 @@
-import { ic3ClientVersion, webChatACSAdapterVersion, webChatDirectLineVersion, webChatIC3AdapterVersion } from "../config/settings";
+import { ic3ClientVersion, webChatDirectLineVersion, webChatIC3AdapterVersion } from "../config/settings";
 
 const getIC3ClientCDNUrl = (version = ic3ClientVersion): string => {
     const IC3ClientCDNUrl = `https://comms.omnichannelengagementhub.com/release/${version}/Scripts/SDK/SDK.min.js`;
@@ -10,8 +10,9 @@ const getIC3AdapterCDNUrl = (version = webChatIC3AdapterVersion): string => {
     return IC3AdapterCDNUrl;
 }
 
-const getACSAdapterCDNUrl = (version = webChatACSAdapterVersion): string => {
-    const ACSAdapterCDNUrl = `https://unpkg.com/acs_webchat-chat-adapter@${version}/dist/chat-adapter.js`;
+const getACSAdapterCDNUrl = (): string => {
+    //const ACSAdapterCDNUrl = `https://unpkg.com/acs_webchat-chat-adapter@${version}/dist/chat-adapter.js`;
+    const ACSAdapterCDNUrl = `../../lib/chat-adapter.js`;
     return ACSAdapterCDNUrl;
 }
 
