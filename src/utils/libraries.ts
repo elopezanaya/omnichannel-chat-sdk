@@ -1,3 +1,7 @@
+import * as path from "path";
+
+    
+
 import { ic3ClientVersion, webChatDirectLineVersion, webChatIC3AdapterVersion } from "../config/settings";
 
 const getIC3ClientCDNUrl = (version = ic3ClientVersion): string => {
@@ -11,9 +15,13 @@ const getIC3AdapterCDNUrl = (version = webChatIC3AdapterVersion): string => {
 }
 
 const getACSAdapterCDNUrl = (): string => {
-    //const ACSAdapterCDNUrl = `https://unpkg.com/acs_webchat-chat-adapter@${version}/dist/chat-adapter.js`;
-    const ACSAdapterCDNUrl = `../../lib/chat-adapter.js`;
-    return ACSAdapterCDNUrl;
+    const ACSAdapterCDNUrl = path.resolve(__dirname, '../acs_adapter.js');
+    const adapterPath = path.resolve(__dirname, '../acs_adapter.js');
+    
+    console.log("adapterPath=> ", adapterPath);
+    
+    console.log("getACSAdapterCDNUrl=> ", ACSAdapterCDNUrl);
+    return "../dist/acs_adapter.js";
 }
 
 const getDirectLineCDNUrl = (version = webChatDirectLineVersion): string => {

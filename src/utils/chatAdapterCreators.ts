@@ -19,6 +19,7 @@ import createFormatEgressTagsMiddleware from "../external/ACSAdapter/createForma
 import createFormatIngressTagsMiddleware from "../external/ACSAdapter/createFormatIngressTagsMiddleware";
 import exceptionThrowers from "./exceptionThrowers";
 import urlResolvers from "./urlResolvers";
+import {createACSAdapter as chatACSAdapter } from "acs_webchat-chat-adapter";
 
 const createDirectLine = async (optionalParams: ChatAdapterOptionalParams, chatSDKConfig: ChatSDKConfig, liveChatVersion: LiveChatVersion, protocol: string, telemetry: typeof AriaTelemetry, scenarioMarker: ScenarioMarker): Promise<unknown> => {
     const options = optionalParams.DirectLine? optionalParams.DirectLine.options: {};
@@ -76,15 +77,16 @@ const createACSAdapter = async (optionalParams: ChatAdapterOptionalParams, chatS
 
     scenarioMarker.startScenario(TelemetryEvent.CreateACSAdapter);
 
-    try {
+    /*try {
+        console.log("AcsAdapterCDNUrl=>", acsAdapterCDNUrl);
         await WebUtils.loadScript(acsAdapterCDNUrl);
     } catch (error) {
         exceptionThrowers.throwScriptLoadFailure(error, scenarioMarker, TelemetryEvent.CreateACSAdapter);
-    }
+    }*/
 
     try {
-        const { ChatAdapter } = window as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-        const adapter = ChatAdapter.createACSAdapter(
+       // const { ChatAdapter } = window as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        const adapter = chatACSAdapter(
             chatToken.token as string,
             chatToken.visitorId || 'teamsvisitor',
             chatToken.chatId as string,

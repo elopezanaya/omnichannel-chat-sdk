@@ -1,6 +1,6 @@
 {
   "name": "@microsoft/omnichannel-chat-sdk",
-  "version": "1.9.7-0",
+  "version": "1.9.7-0-LPZ-ND-sdjdk3usiuasiu232",
   "description": "Microsoft Omnichannel Chat SDK",
   "files": [
     "lib/**/*"
@@ -12,7 +12,7 @@
     "test": "jest",
     "lint": "eslint src --ext .ts",
     "copy_aria": "cp -R ./src/external/aria lib/external/",
-    "prepare_acs": "cp -R ./node_modules/acs_webchat-chat-adapter/dist/chat-adapter.js ./lib/acs_adapter.js"
+    "prepare_acs": "cp -R ./node_modules/acs_webchat-chat-adapter/dist/chat-adapter.js ./lib/chat-adapter.js"
   },
   "author": "Microsoft Corporation",
   "license": "MIT",
