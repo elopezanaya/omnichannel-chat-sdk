@@ -1,8 +1,9 @@
+import { ChatMessageEditedEvent, ChatMessageReceivedEvent } from '@azure/communication-signaling';
+import OmnichannelMessage, { IFileMetadata, IPerson, MessageType, PersonType } from "../core/messaging/OmnichannelMessage";
+
 import { ChatMessage } from "@azure/communication-chat";
-import { ChatMessageReceivedEvent, ChatMessageEditedEvent } from '@azure/communication-signaling';
 import IRawMessage from "@microsoft/omnichannel-ic3core/lib/model/IRawMessage";
 import LiveChatVersion from '../core/LiveChatVersion';
-import OmnichannelMessage, { IFileMetadata, IPerson, MessageType, PersonType } from "../core/messaging/OmnichannelMessage";
 
 interface CreateOmnichannelMessageOptionalParams {
     liveChatVersion: LiveChatVersion;
@@ -11,7 +12,7 @@ interface CreateOmnichannelMessageOptionalParams {
 
 const createOmnichannelMessage = (message: IRawMessage | ChatMessageReceivedEvent | ChatMessageEditedEvent | ChatMessage, optionalParams: CreateOmnichannelMessageOptionalParams): OmnichannelMessage => {
     let omnichannelMessage = {} as OmnichannelMessage;
-    omnichannelMessage.liveChatVersion = optionalParams.liveChatVersion || LiveChatVersion.V1;
+    omnichannelMessage.liveChatVersion = optionalParams.liveChatVersion || LiveChatVersion.V2;
 
     optionalParams.debug && console.log(message);
 
