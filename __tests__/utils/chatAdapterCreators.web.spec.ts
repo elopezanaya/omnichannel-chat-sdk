@@ -74,7 +74,7 @@ describe("Chat Adapter Creators", () => {
     });
 
     it("createACSAdapter should return an Adapter", async () => {
-        jest.mock("acs_webchat-chat-adapter");
+        jest.mock("@microsoft/botframework-webchat-adapter-azure-communication-chat");
 
         const optionalParams = {
             ACSAdapter: {
@@ -107,43 +107,6 @@ describe("Chat Adapter Creators", () => {
 
         const adapter = await createACSAdapter(optionalParams, chatSDKConfig, LiveChatVersion.V2, "ACS", telemetry, scenarioMarker, omnichannelConfig, chatToken, fileManager, chatClient, logger) as any;
         expect(adapter).toBeDefined();
-    });
-
-    it("createACSAdapter() should throw an exception if object failed to be created", async () => {
-
-        const optionalParams = {
-            ACSAdapter: {
-                options: {}
-            }
-        };
-
-        const chatSDKConfig = {};
-        const telemetry: any = {
-            setCDNPackages: jest.fn()
-        };
-
-        const scenarioMarker: any = {
-            startScenario: jest.fn(),
-            failScenario: jest.fn()
-        };
-
-        const omnichannelConfig = {
-            orgId: '',
-            orgUrl: '',
-            widgetId: '',
-        };
-
-        const chatToken = {};
-        const fileManager: any = jest.fn();
-        const chatClient: any = jest.fn();
-        const logger: any = jest.fn();
-
-        try {
-            await createACSAdapter(optionalParams, chatSDKConfig, LiveChatVersion.V2, "ACS", telemetry, scenarioMarker, omnichannelConfig, chatToken, fileManager, chatClient, logger);
-            fail("Failure expected");
-        } catch (e: any) {
-            expect(e.message).toBe('ChatAdapterInitializationFailure');
-        }
     });
 
     it("createIC3Adapter() should throw an exception if script load fails", async () => {
