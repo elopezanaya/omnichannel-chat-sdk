@@ -214,7 +214,10 @@ class OmnichannelChatSDK {
     public setDebug(flag: boolean): void {
 
         this.debug = flag;
-        this.getAMSClient().then((client) => client?.setDebug(flag));
+
+        if (this.AMSClient){
+            this.AMSClient.setDebug(flag);
+        }
 
         this.telemetry?.setDebug(flag);
         this.scenarioMarker.setDebug(flag);
@@ -284,7 +287,7 @@ class OmnichannelChatSDK {
                 this.AMSClient = await createAMSClient({
                     framedMode: isBrowser(),
                     multiClient: true,
-                    debug: false,
+                    debug: this.debug,
                     logger: this.amsClientLogger as PluggableLogger
                 });
                 this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADED;
@@ -365,7 +368,7 @@ class OmnichannelChatSDK {
                 this.AMSClient = await createAMSClient({
                     framedMode: isBrowser(),
                     multiClient: true,
-                    debug: false,
+                    debug: this.debug,
                     logger: this.amsClientLogger as PluggableLogger
                 });
                 this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADED;
