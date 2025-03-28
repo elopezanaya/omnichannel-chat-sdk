@@ -37,6 +37,7 @@ import ConversationMode from "./core/ConversationMode";
 import DeliveryMode from "@microsoft/omnichannel-ic3core/lib/model/DeliveryMode";
 import EmailLiveChatTranscriptOptionaParams from "./core/EmailLiveChatTranscriptOptionalParams";
 import EndChatOptionalParams from "./core/EndChatOptionalParams";
+import FetchChatTokenResponse from "@microsoft/ocsdk/lib/Model/FetchChatTokenResponse";
 import FileMetadata from "@microsoft/omnichannel-amsclient/lib/FileMetadata";
 import FileSharingProtocolType from "@microsoft/omnichannel-ic3core/lib/model/FileSharingProtocolType";
 import FramedClient from "@microsoft/omnichannel-amsclient/lib/FramedClient";
@@ -109,7 +110,6 @@ import startPolling from "./commands/startPolling";
 import stopPolling from "./commands/stopPolling";
 import urlResolvers from "./utils/urlResolvers";
 import validateOmnichannelConfig from "./validators/OmnichannelConfigValidator";
-import FetchChatTokenResponse from "@microsoft/ocsdk/lib/Model/FetchChatTokenResponse";
 
 class OmnichannelChatSDK {
     private debug: boolean;
@@ -267,6 +267,10 @@ class OmnichannelChatSDK {
             exceptionThrowers.throwUnsupportedLiveChatVersionFailure(new Error(ChatSDKErrorName.UnsupportedLiveChatVersion), this.scenarioMarker, TelemetryEvent.InitializeComponents);
         }
 
+        if (this.liveChatVersion === LiveChatVersion.V2) {
+            this.ACSClient = new ACSClient(this.acsClientLogger);
+        }
+
         this.isInitialized = true;
         this.scenarioMarker.completeScenario(TelemetryEvent.InitializeComponents);
     }
@@ -275,7 +279,6 @@ class OmnichannelChatSDK {
         this.scenarioMarker.startScenario(TelemetryEvent.InitializeMessagingClient);
         try {
             if (this.liveChatVersion === LiveChatVersion.V2) {
-                this.ACSClient = new ACSClient(this.acsClientLogger);
                 this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADING;
 
                 this.AMSClient = await createAMSClient({
