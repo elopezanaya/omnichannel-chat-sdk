@@ -37,6 +37,7 @@ describe('Omnichannel Chat SDK (Node), Sequential', () => {
         const chatSDK = new OmnichannelChatSDK(omnichannelConfig);
         chatSDK.getChatConfig = jest.fn();
 
+        chatSDK["isAMSClientAllowed"] = "true";
         await chatSDK.initialize();
 
         chatSDK.IC3Client = {
@@ -82,7 +83,7 @@ describe('Omnichannel Chat SDK (Node), Sequential', () => {
         };
         chatSDK.getChatConfig = jest.fn();
         chatSDK.getChatToken = jest.fn();
-
+        chatSDK["isAMSClientAllowed"] = "true";
         await chatSDK.initialize();
 
         chatSDK.ACSClient.initialize = jest.fn();
@@ -114,6 +115,7 @@ describe('Omnichannel Chat SDK (Node), Sequential', () => {
         chatSDK.getChatConfig = jest.fn();
         chatSDK.getChatToken = jest.fn();
 
+        chatSDK["isAMSClientAllowed"] = "true";
         await chatSDK.initialize();
 
         chatSDK.ACSClient.initialize = jest.fn();

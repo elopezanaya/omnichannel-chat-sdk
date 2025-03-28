@@ -397,17 +397,24 @@ class OmnichannelChatSDK {
 
             if (this.liveChatVersion === LiveChatVersion.V2) {
                 this.ACSClient = new ACSClient(this.acsClientLogger);
-                this.AMSClient = await createAMSClient({
-                    framedMode: isBrowser(),
-                    multiClient: true,
-                    debug: this.debug,
-                    logger: this.amsClientLogger as PluggableLogger
-                });
-                this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADED;
+
+                if (this.isAMSLoadAllowed()) {
+                    console.log("AMS TO BE LOADED");
+                    this.AMSClient = await createAMSClient({
+                        framedMode: isBrowser(),
+                        multiClient: true,
+                        debug: this.debug,
+                        logger: this.amsClientLogger as PluggableLogger
+                    });
+                    this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADED;
+                } else {
+                    console.log("AMS NOT LOADED");
+                }
 
             } else if (this.liveChatVersion === LiveChatVersion.V1) {
                 this.IC3Client = await this.getIC3Client();
             }
+
             this.isInitialized = true;
             this.scenarioMarker.completeScenario(TelemetryEvent.InitializeChatSDK);
 
