@@ -41,6 +41,7 @@ describe('Omnichannel Chat SDK (Web), Sequential', () => {
         const chatSDK = new OmnichannelChatSDK(omnichannelConfig);
         chatSDK.getChatConfig = jest.fn();
 
+        chatSDK["isAMSClientAllowed"] = true;
         await chatSDK.initialize();
 
         const optionalParams = {
@@ -73,7 +74,7 @@ describe('Omnichannel Chat SDK (Web), Sequential', () => {
     it('ChatSDK.startChat() with sendDefaultInitContext should throw an error if not used on Web Platform', async () => {
         const chatSDK = new OmnichannelChatSDK(omnichannelConfig);
         chatSDK.getChatConfig = jest.fn();
-
+        chatSDK["isAMSClientAllowed"] = true;
         await chatSDK.initialize();
 
         const optionalParams = {
@@ -105,7 +106,7 @@ describe('Omnichannel Chat SDK (Web), Sequential', () => {
         const chatSDK = new OmnichannelChatSDK(omnichannelConfig);
         chatSDK.getChatConfig = jest.fn();
         chatSDK.getChatToken = jest.fn();
-
+        chatSDK["isAMSClientAllowed"] = true;
         await chatSDK.initialize();
 
         chatSDK.OCClient.sessionInit = jest.fn();
@@ -130,7 +131,7 @@ describe('Omnichannel Chat SDK (Web), Sequential', () => {
         const chatSDK = new OmnichannelChatSDK(omnichannelConfig);
         chatSDK.getChatConfig = jest.fn();
         chatSDK.getChatToken = jest.fn();
-
+        chatSDK["isAMSClientAllowed"] = true;
         await chatSDK.initialize();
 
         chatSDK.OCClient.sessionInit = jest.fn();
@@ -158,7 +159,7 @@ describe('Omnichannel Chat SDK (Web), Sequential', () => {
         const chatSDK = new OmnichannelChatSDK(omnichannelConfig);
         chatSDK.getChatConfig = jest.fn();
         chatSDK.getChatToken = jest.fn();
-
+        chatSDK["isAMSClientAllowed"] = true;
         await chatSDK.initialize();
 
         chatSDK.callingOption = CallingOptionsOptionSetNumber.NoCalling;

@@ -153,6 +153,7 @@ class OmnichannelChatSDK {
     private AMSClientLoadCurrentState: AMSClientLoadStates = AMSClientLoadStates.NOT_LOADED;
     private isMaskingDisabled = false;
     private maskingCharacter = "#";
+    private isAMSClientAllowed = false;
 
     constructor(omnichannelConfig: OmnichannelConfig, chatSDKConfig: ChatSDKConfig = defaultChatSDKConfig) {
         this.debug = false;
@@ -216,7 +217,7 @@ class OmnichannelChatSDK {
         this.debug = flag;
 
         if (this.AMSClient){
-            this.AMSClient.setDebug(flag);
+            this.AMSClient?.setDebug(flag);
         }
 
         this.telemetry?.setDebug(flag);
@@ -278,12 +279,43 @@ class OmnichannelChatSDK {
         this.scenarioMarker.completeScenario(TelemetryEvent.InitializeComponents);
     }
 
+    private isAMSLoadAllowed(): boolean {
+
+        // if the value is true, it means is already evaluated, so no need to evaluate again
+        if (this.isAMSClientAllowed === true) {
+            return this.isAMSClientAllowed;
+        }
+
+        // it will load AMS only if enabled for Customer or Agent support for attachments, based on configuration
+        if (this.liveChatConfig?.LiveWSAndLiveChatEngJoin?.msdyn_enablefileattachmentsforcustomers === "true" ||
+            this.liveChatConfig?.LiveWSAndLiveChatEngJoin?.msdyn_enablefileattachmentsforagents === "true") {
+
+            //override of this value, since it will be needed to control access to attachment operations
+            this.isAMSClientAllowed = true;
+            return this.isAMSClientAllowed;
+        }
+        return this.isAMSClientAllowed;
+    }
+
     private async loadAmsClient() : Promise<void> {
         this.scenarioMarker.startScenario(TelemetryEvent.InitializeMessagingClient);
         try {
-            if (this.liveChatVersion === LiveChatVersion.V2) {
-                this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADING;
 
+            if (!this.isAMSLoadAllowed()) {
+                this.AMSClientLoadCurrentState = AMSClientLoadStates.NOT_LOADED;
+                this.scenarioMarker.completeScenario(TelemetryEvent.InitializeMessagingClient);
+                return;
+            }
+
+            if (this.liveChatVersion === LiveChatVersion.V2) {
+
+                // preventing multiple calls to createAMSClient
+                if (this.AMSClientLoadCurrentState === AMSClientLoadStates.LOADING ||
+                    this.AMSClientLoadCurrentState === AMSClientLoadStates.LOADED) {
+                    return;
+                }
+
+                this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADING;
                 this.AMSClient = await createAMSClient({
                     framedMode: isBrowser(),
                     multiClient: true,
@@ -372,11 +404,13 @@ class OmnichannelChatSDK {
                     logger: this.amsClientLogger as PluggableLogger
                 });
                 this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADED;
+
             } else if (this.liveChatVersion === LiveChatVersion.V1) {
                 this.IC3Client = await this.getIC3Client();
             }
             this.isInitialized = true;
             this.scenarioMarker.completeScenario(TelemetryEvent.InitializeChatSDK);
+
         } catch (e) {
             this.AMSClientLoadCurrentState = AMSClientLoadStates.ERROR;
             exceptionThrowers.throwMessagingClientCreationFailure(e, this.scenarioMarker, TelemetryEvent.InitializeChatSDK);
