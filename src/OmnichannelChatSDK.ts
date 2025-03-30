@@ -101,6 +101,7 @@ import { defaultMessageTags } from "./core/messaging/MessageTags";
 import exceptionSuppressors from "./utils/exceptionSuppressors";
 import exceptionThrowers from "./utils/exceptionThrowers";
 import { getLocationInfo } from "./utils/location";
+import { is } from "core-js/core/object";
 import { isCoreServicesOrgUrlDNSError } from "./utils/internalUtils";
 import loggerUtils from "./utils/loggerUtils";
 import { parseLowerCaseString } from "./utils/parsers";
@@ -228,33 +229,41 @@ class OmnichannelChatSDK {
     private async retryLoadAMSClient() : Promise<AmsClient> {
         // Constants for retry logic
         const RETRY_DELAY_MS = 1000;
-        const MAX_RETRY_COUNT = 5;
+        const MAX_RETRY_COUNT = 30;
         let retryCount = 0;
 
         while (retryCount < MAX_RETRY_COUNT) {
             if (this.AMSClient) {
+                console.log("AMS Client loaded successfully after retrying.");
                 return this.AMSClient;
+            }else {
+                console.error("AMS Client not loaded, retrying...");
             }
 
             await sleep(RETRY_DELAY_MS);
             retryCount++;
         }
+        console.log("AMS Client failed to load after multiple retries.");
         return null;
     }
 
     private async getAMSClient() : Promise<AmsClient> {
 
         if (this.AMSClientLoadCurrentState === AMSClientLoadStates.NOT_LOADED && this.liveChatVersion === LiveChatVersion.V1) {
+            console.log("AMS Client not loaded, since file attachment is not enabled for Customer or Agent support.");
             return null;
         }
         switch (this.AMSClientLoadCurrentState) {
         case AMSClientLoadStates.LOADED:
+            console.log("AMS Client already loaded");
             return this.AMSClient;
         case AMSClientLoadStates.LOADING:
+            console.log("AMS Client is loading, waiting for it to finish.");
             return await this.retryLoadAMSClient();
 
         case AMSClientLoadStates.ERROR:
         case AMSClientLoadStates.NOT_LOADED:
+            console.log("AMS Client not loaded, loading it now.");
             await this.loadAmsClient();
             return this.AMSClient;
 
@@ -273,6 +282,8 @@ class OmnichannelChatSDK {
 
         if (this.liveChatVersion === LiveChatVersion.V2) {
             this.ACSClient = new ACSClient(this.acsClientLogger);
+        } else if (this.liveChatVersion === LiveChatVersion.V1) {
+            this.IC3Client = await this.getIC3Client();
         }
 
         this.isInitialized = true;
@@ -301,7 +312,8 @@ class OmnichannelChatSDK {
         this.scenarioMarker.startScenario(TelemetryEvent.InitializeMessagingClient);
         try {
 
-            if (!this.isAMSLoadAllowed()) {
+            if (!this.isAMSClientAllowed) {
+                console.error("AMS Client not loaded, since file attachment is not enabled for Customer or Agent support.");
                 this.AMSClientLoadCurrentState = AMSClientLoadStates.NOT_LOADED;
                 this.scenarioMarker.completeScenario(TelemetryEvent.InitializeMessagingClient);
                 return;
@@ -309,22 +321,30 @@ class OmnichannelChatSDK {
 
             if (this.liveChatVersion === LiveChatVersion.V2) {
 
+                console.log("AMS Client to be loaded");
+
                 // preventing multiple calls to createAMSClient
                 if (this.AMSClientLoadCurrentState === AMSClientLoadStates.LOADING ||
                     this.AMSClientLoadCurrentState === AMSClientLoadStates.LOADED) {
+                    console.error("AMS Client already loading or loaded, skipping load.");
                     return;
                 }
 
                 this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADING;
+                console.log("Startingg to load AMS Client :: ", isBrowser());
+                console.time("ams");
                 this.AMSClient = await createAMSClient({
                     framedMode: isBrowser(),
                     multiClient: true,
                     debug: this.debug,
                     logger: this.amsClientLogger as PluggableLogger
                 });
+                console.timeEnd("ams");
+                console.log("AMS Client loaded successfully");
                 this.AMSClientLoadCurrentState = AMSClientLoadStates.LOADED;
-            } else if (this.liveChatVersion === LiveChatVersion.V1) {
-                this.IC3Client = await this.getIC3Client();
+                console.log("AMS Client loaded successfully");
+            }else {
+                console.error("AMS Client not loaded, since file attachment is not enabled for Customer or Agent support.");
             }
 
             this.scenarioMarker.completeScenario(TelemetryEvent.InitializeMessagingClient);
@@ -398,7 +418,7 @@ class OmnichannelChatSDK {
             if (this.liveChatVersion === LiveChatVersion.V2) {
                 this.ACSClient = new ACSClient(this.acsClientLogger);
 
-                if (this.isAMSLoadAllowed()) {
+                if (this.isAMSClientAllowed) {
                     console.log("AMS TO BE LOADED");
                     this.AMSClient = await createAMSClient({
                         framedMode: isBrowser(),
@@ -850,13 +870,24 @@ class OmnichannelChatSDK {
             }
         };
 
-        const attachmentClientPromise = async () : Promise<void> => {
+        const attachmentClientPromise = async (): Promise<void> => {
             try {
-                const amsClient = await this.getAMSClient();
+                console.log("attachmentClientPromise");
+                // const amsClient = await this.getAMSClient();
+
+                const amsClient = this.AMSClient;
+
+                if (amsClient === null) {
+                    console.error("this is wrong, why is null??");
+                }
+
                 if (this.liveChatVersion === LiveChatVersion.V2) {
+                    console.log("promisse ::: AMS Client to be initialized ::: ", this.AMSClientLoadCurrentState);
+                    console.log(" is ams loaded in promisse ?,", amsClient !== null);
                     await amsClient?.initialize({ chatToken: this.chatToken as OmnichannelChatToken });
                 }
             } catch (error) {
+                console.error("AMS error", error);
                 const telemetryData = {
                     RequestId: this.requestId,
                     ChatId: this.chatToken.chatId as string,
@@ -867,10 +898,14 @@ class OmnichannelChatSDK {
         };
 
         if (!this.chatSDKConfig.useCreateConversation?.disable) {
+            attachmentClientPromise();
+            console.log("createConversationPromise");
             await createConversationPromise();
-            await Promise.all([messagingClientPromise(), attachmentClientPromise()]);
+
+            await Promise.all([messagingClientPromise()]);
         } else {
-            await Promise.all([sessionInitPromise(), messagingClientPromise(), attachmentClientPromise()]);
+            console.log("sessionInitPromise");
+            await Promise.all([sessionInitPromise(), messagingClientPromise()]);
         }
 
         if (this.isPersistentChat && !this.chatSDKConfig.persistentChat?.disable) {
@@ -1267,20 +1302,24 @@ class OmnichannelChatSDK {
         }
 
         try {
+            console.time("getMessages");
             const messages = await (this.conversation as (IConversation | ACSConversation))?.getMessages();
-            this.recordMessages(messages);
-
             this.scenarioMarker.completeScenario(TelemetryEvent.GetMessages, {
                 RequestId: this.requestId,
                 ChatId: this.chatToken.chatId as string
             });
 
+            console.time("record");
+            this.recordMessages(messages);
+            console.timeEnd("record");
             return messages as GetMessagesResponse;
         } catch {
             this.scenarioMarker.failScenario(TelemetryEvent.GetMessages, {
                 RequestId: this.requestId,
                 ChatId: this.chatToken.chatId as string
             });
+        }finally{
+            console.timeEnd("getMessages");
         }
     }
 
@@ -1635,6 +1674,8 @@ class OmnichannelChatSDK {
     }
 
     public async uploadFileAttachment(fileInfo: IFileInfo | File): Promise<UploadFileAttachmentResponse> {
+
+        console.log("Uploading file attachment");
         const amsClient = await this.getAMSClient();
         this.scenarioMarker.startScenario(TelemetryEvent.UploadFileAttachment, {
             RequestId: this.requestId,
@@ -1642,6 +1683,7 @@ class OmnichannelChatSDK {
         });
 
         if (!this.isInitialized) {
+            console.error("Error: OmnichannelChatSDK/uploadFileAttachment/uninitializedChatSDK");
             exceptionThrowers.throwUninitializedChatSDK(this.scenarioMarker, TelemetryEvent.UploadFileAttachment);
         }
 
@@ -1688,6 +1730,7 @@ class OmnichannelChatSDK {
             };
 
             try {
+                console.log("send message with uploaded file");
                 await (this.conversation as ACSConversation)?.sendMessage(sendMessageRequest);
 
                 this.scenarioMarker.completeScenario(TelemetryEvent.UploadFileAttachment, {
@@ -2430,6 +2473,7 @@ class OmnichannelChatSDK {
             liveChatConfig = await this.OCClient.getChatConfig(this.requestId, bypassCache);
             this.liveChatConfig = liveChatConfig;
             this.buildConfigurations(liveChatConfig);
+            this.isAMSLoadAllowed();
             /* istanbul ignore next */
             this.debug && console.log(`[OmnichannelChatSDK][getChatConfig][liveChatVersion] ${this.liveChatVersion}`);
             return this.liveChatConfig;
